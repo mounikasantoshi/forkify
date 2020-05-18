@@ -1,6 +1,7 @@
 import Search from './modules/Search';
 import Recipe from './modules/recipe';
 import * as searchview from './views/searchview';
+import * as recipeviews from './views/RecipeViews';
 import {elements,renderLoader,clearLoader} from './views/base';
 
 /**Global state of the app
@@ -35,7 +36,7 @@ const controlsearch = async () =>{
     //5. render result on UI
     clearLoader();
     searchview.renderResults(state.search.result);
-    //console.log(state.search.result);
+    console.log(state.search.result);
     }catch(err){
       alert('something went wrong with search');
       clearLoader();
@@ -68,11 +69,12 @@ elements.searchResPages.addEventListener('click', e =>{
  * Recipe controller
  */
 const controlRecipe = async () => {
-  const id =window.location.hash.replace('#','');
-  //console.log(id);
+  const id=window.location.hash.replace('#','');
+    //console.log(id);
 
   if(id){
     //prepare UI for changes
+    renderLoader(elements, recipe);
 
     //create new recipe object
       state.recipe = new Recipe(id);
@@ -80,13 +82,14 @@ const controlRecipe = async () => {
       try{
          //get recipe data and parse ingredients
           await state.recipe.getRecipe();
-          console.log(state.recipe.ingredients);
           state.recipe.parseIngredients();
          //calculate servings and time
           state.recipe.calcTime();
           state.recipe.calcServings();
           //render the recipe
-          //console.log(state.recipe);
+          clearLoader();
+          recipeviews.renderRecipe(state.recipe);
+          console.log(state.recipe);
       }catch(err){
         alert('error processing recipe');
       }
@@ -98,6 +101,10 @@ const controlRecipe = async () => {
 //window.addEventListener('load',controlRecipe);
 
 ['hashchange','load'].forEach(event =>window.addEventListener(event,controlRecipe));
+
+
+
+
 
 
 
